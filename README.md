@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="https://raw.githubusercontent.com/YOUR_USERNAME/slapbook/main/assets/banner.png" alt="SlapBook" width="100%">
+
 # 💥 SlapBook
 
 ### *Slap your MacBook. Watch it shatter. Hear it scream.*
@@ -7,89 +9,179 @@
 A macOS menu bar app that listens to your MacBook's built-in accelerometer —
 the moment it detects a slap, it shatters your screen and reacts like **Talking Tom** on a bad day.
 
+<br>
+
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-black?style=for-the-badge&logo=apple)](https://www.apple.com/macos/)
 [![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange?style=for-the-badge&logo=swift)](https://swift.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-green?style=for-the-badge)]()
+
+<br>
+
 ```
    you: *slap*
+
    MacBook: 😱 "MY SCREEN! MY BEAUTIFUL SCREEN!"
             💥 [shatters dramatically]
 ```
+
+<br>
 
 </div>
 
 ---
 
-## ✨ Features
+## ✨ What It Does
 
 | Feature | Description |
 |--------|-------------|
 | 🪨 **Accelerometer Detection** | Reads your MacBook's Sudden Motion Sensor at 60Hz — no battery drain |
-| 💥 **Procedural Crack Rendering** | Every shatter is unique: random impacts, branching cracks, LCD bleed lines |
-| 🎙️ **Talking Tom Voice Reactions** | 24 unique voice lines across 4 intensity levels |
-| 🔊 **Sound Effects** | Layered impact sounds matching slap intensity |
+| 💥 **Procedural Crack Rendering** | Every shatter is unique: random impact points, branching cracks, shatter polygons, LCD bleed lines |
+| 🎙️ **Talking Tom Voice Reactions** | 24 unique voice lines across 4 intensity levels — the harder the slap, the more unhinged the reaction |
+| 🔊 **System Sound Effects** | Layered impact sounds that match slap intensity |
 | 🖥️ **Multi-Display** | Shatters ALL connected screens simultaneously |
+| 🎚️ **4 Intensity Levels** | Light tap to legendary bonk — each triggers different cracks + different reactions |
 | 📊 **Slap Counter** | Tracks your destruction in the menu bar |
-| ⚙️ **Preferences** | Sensitivity slider + voice reaction toggle |
+| ⚙️ **Preferences** | Adjustable sensitivity slider + toggle voice reactions |
 
 ---
 
-## 🎭 Intensity Levels
+## 🎭 Reaction Levels
 
-| Level | Trigger | Reaction |
-|-------|---------|----------|
-| 😮 Light | Gentle tap | *"Excuse me?!"* |
-| 😱 Medium | Real slap | *"MY SCREEN! MY BEAUTIFUL SCREEN!"* |
-| 🤯 Hard | Aggressive thump | *"I AM CALLING THE LAPTOP POLICE."* |
-| 💀 Legendary | Full commit | *"MY ANCESTORS ARE SCREAMING."* |
+| Intensity | Trigger | Visual | Voice Reaction |
+|-----------|---------|--------|----------------|
+| 😮 **Light** | Gentle tap | 1 impact point, thin cracks | *"Excuse me?!"* / *"Rude!"* |
+| 😱 **Medium** | Real slap | 1–2 impacts, branching cracks | *"MY SCREEN! MY BEAUTIFUL SCREEN!"* |
+| 🤯 **Hard** | Aggressive thump | 2–3 impacts, dense shattering | *"I AM CALLING THE LAPTOP POLICE."* |
+| 💀 **Legendary** | Full commit | 3–5 impacts, color distortion, full chaos | *"MY ANCESTORS ARE SCREAMING."* |
 
 ---
 
 ## 🚀 Install
+
+### One-line install (recommended)
+
 ```bash
-git clone https://github.com/YOUR_USERNAME/slapbook.git
-cd slapbook
-bash install.sh
+git clone https://github.com/YOUR_USERNAME/slapbook.git && cd slapbook && bash install.sh
 ```
 
-> Requires macOS 13+ and Xcode Command Line Tools.
-> Don't have them? Run `xcode-select --install` first.
+That's it. The script will:
+- ✅ Check Swift + macOS version
+- ✅ Build the app in release mode
+- ✅ Install to `/Applications/SlapBook.app`
+- ✅ Optionally launch at login
+- ✅ Launch immediately
+
+> **Requires:** macOS 13 Ventura or later · Xcode Command Line Tools
+
+Install Xcode CLI tools if you haven't:
+```bash
+xcode-select --install
+```
+
+### Manual build
+
+```bash
+cd SlapBook
+swift build -c release
+.build/release/SlapBook
+```
 
 ---
 
 ## 🗑️ Uninstall
+
 ```bash
 rm -rf /Applications/SlapBook.app
+# Remove auto-start (if enabled):
 launchctl unload ~/Library/LaunchAgents/com.slapbook.app.plist
 rm ~/Library/LaunchAgents/com.slapbook.app.plist
 ```
 
 ---
 
-## ⌨️ Apple Silicon / No Accelerometer?
+## 🏗️ How It Works
 
-SlapBook auto-detects and falls back to a keyboard shortcut:
 ```
-Shift + Ctrl + S → trigger manually
+MacBook Accelerometer (IOKit, ~60Hz)
+           │
+           ▼
+    SlapDetector.swift
+    ┌──────────────────────────────┐
+    │  Read x/y/z acceleration     │
+    │  Δmagnitude > threshold?     │
+    │  Map delta → SlapIntensity   │
+    └──────────────┬───────────────┘
+                   │ .light / .medium / .hard / .legendary
+                   ▼
+         AppDelegate.handleSlap()
+         ┌────────────────────────┐
+         │  Update slap counter   │
+         │  Animate menu icon     │
+         └────────┬───────────────┘
+          ┌───────┴───────────┐
+          ▼                   ▼
+   SoundEngine.swift    OverlayWindowController.swift
+   ┌──────────────┐     ┌──────────────────────────────┐
+   │ Impact sound │     │ CrackOverlayView (CoreGraphics)│
+   │ TTS reaction │     │  • Radial branching cracks    │
+   │ 24 phrases   │     │  • Shatter polygons           │
+   └──────────────┘     │  • LCD bleed lines            │
+                        │  • Color distortion (legendary)│
+                        │  • Screen shake animation     │
+                        │  • Emoji + text reaction label│
+                        └──────────────────────────────┘
+                                    │
+                            click or timeout
+                                    │
+                                 Dismiss
 ```
 
 ---
 
-## 📁 Structure
+## 📁 Project Structure
+
 ```
 slapbook/
-├── install.sh
+├── install.sh                          ← One-command installer
+├── README.md
 └── SlapBook/
     ├── Package.swift
+    ├── Resources/
+    │   └── Info.plist
     └── Sources/SlapBook/
-        ├── main.swift
-        ├── AppDelegate.swift
-        ├── SlapDetector.swift
-        ├── SoundEngine.swift
-        ├── OverlayWindowController.swift
+        ├── main.swift                  ← Entry point
+        ├── AppDelegate.swift           ← Menu bar + orchestration
+        ├── SlapDetector.swift          ← IOKit SMS accelerometer polling
+        ├── SoundEngine.swift           ← Talking Tom voice reactions
+        ├── OverlayWindowController.swift ← Cracked screen renderer
         └── PreferencesWindowController.swift
 ```
+
+---
+
+## ⚠️ Apple Silicon Note
+
+Apple Silicon Macs need a private entitlement to access SMS directly. SlapBook **automatically falls back** to a keyboard shortcut:
+
+```
+Shift + Ctrl + S  →  trigger the effect manually
+```
+
+For a fully signed build with SMS on Apple Silicon, see the [entitlements guide](docs/entitlements.md).
+
+---
+
+## 🤝 Contributing
+
+PRs welcome! Some ideas if you want to contribute:
+
+- [ ] More voice reaction lines
+- [ ] Custom sound file support
+- [ ] Animated emoji face overlay (actual Talking Tom style)
+- [ ] Haptic feedback via Taptic Engine
+- [ ] Sparkle auto-updater integration
+- [ ] App icon `.icns`
 
 ---
 
@@ -103,62 +195,6 @@ MIT — go wild. Just don't actually break your MacBook.
 
 Made with 💥 and questionable judgment
 
-**Star this repo** if it made you laugh ⭐
+**[⭐ Star this repo](https://github.com/YOUR_USERNAME/slapbook)** if it made you laugh
 
 </div>
-```
-
----
-
-## 🚀 First Commit Message
-```
-🚀 init: SlapBook v1.0 — slap your Mac, shatter the screen, Talking Tom reacts
-```
-
----
-
-## 🏷️ Release Title & Tag
-```
-Tag:    v1.0.0
-Title:  💥 SlapBook v1.0 — First Shatter
-```
-
-**Release notes:**
-```
-## What's new
-- 🪨 Accelerometer slap detection via IOKit (60Hz)
-- 💥 Procedural cracked screen with 4 intensity levels
-- 🎙️ 24 Talking Tom-style voice reactions
-- 🔊 Layered system sound effects
-- 🖥️ Multi-display support
-- 📊 Slap counter in menu bar
-- ⚙️ Sensitivity slider + sound toggle
-- 🚀 One-line bash installer
-- ⌨️ Keyboard fallback for Apple Silicon (Shift+Ctrl+S)
-```
-
----
-
-## 🐦 Launch Tweet
-```
-just shipped SlapBook 💥
-
-slap your MacBook → broken screen effect + Talking Tom screams at you
-
-built in Swift, zero deps, one-line install
-
-github.com/YOUR_USERNAME/slapbook
-
-#Swift #macOS #OpenSource #buildinpublic
-```
-
----
-
-## 🐱 Product Hunt
-**Tagline:**
-```
-Slap your MacBook. Watch it shatter. Hear it scream.
-```
-**Description:**
-```
-SlapBook is a tiny macOS menu bar app that uses your MacBook's built-in accelerometer to detect slaps. Hit it and you get: a full-screen procedural cracked glass effect, Talking Tom-style voice reactions (24 phrases across 4 intensity levels), layered sound effects, and a slap counter. Free, open source, zero dependencies.
