@@ -1,6 +1,5 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/YOUR_USERNAME/slapbook/main/assets/banner.png" alt="SlapBook" width="100%">
 
 # 💥 SlapBook
 
